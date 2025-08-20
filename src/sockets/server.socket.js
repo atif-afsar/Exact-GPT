@@ -32,24 +32,32 @@ function initSocketServer(httpServer) {
         chat: messagePayload.chat,
         content: messagePayload.content,
         role: "user",
-      })
+      });
 
-      const chatHistory = await messageModel.find({chat: messagePayload.chat});
+      const chatHistory = (
+        await messageModel
+          .find({ chat: messagePayload.chat })
+          .sort({ createdAt: -1 })
+          .limit(20)
+          .lean()
+      ).reverse();
 
-      const response = await aiService.generateResponse(chatHistory.map(item =>{
-        return {
-          role: item.role,
-          parts: [{text: item.content}]
-        }
-      }))
+      const response = await aiService.generateResponse(
+        chatHistory.map((item) => {
+          return {
+            role: item.role,
+            parts: [{ text: item.content }],
+          };
+        })
+      );
 
       await messageModel.create({
         user: socket.user._id,
         chat: messagePayload.chat,
         content: response,
         role: "model",
-      }) 
-      
+      });
+
       socket.emit("ai-response", {
         content: response,
         chat: messagePayload.chat,

@@ -20,7 +20,7 @@ async function queryMemory({ vectors, limit = 5, metadata }) {
   const data = await cohortChatGptIndex.query({
     vector: vectors,
     topK: limit,
-    filter: metadata ? { metadata } : undefined,
+    filter: metadata ?  metadata  : undefined,
     includeMetadata: true,
   });
 

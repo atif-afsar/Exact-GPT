@@ -1,0 +1,29 @@
+/* Centralized theme variables: light (default) and dark via [data-theme="dark"] */
+:root {
+  --bg: #f7fafc;
+  --surface: #ffffff;
+  --text: #0f1724;
+  --muted: #6b7280;
+  --accent: #4f46e5; /* indigo-600 */
+  --accent-600: #4338ca;
+  --input-bg: #f8fafc;
+  --input-border: #e6e9ee;
+  --shadow: 0 8px 30px rgba(15, 23, 36, 0.08);
+  --glass: rgba(255,255,255,0.6);
+  --radius: 14px;
+}
+
+/* Dark theme variables */
+[data-theme="dark"] {
+  --bg: #071022;
+  --surface: #07122a;
+  --text: #e6eef8;
+  --muted: #9aa6b2;
+  --accent: #7c3aed; /* indigo/purple */
+  --accent-600: #6126d6;
+  --input-bg: #07172a;
+  --input-border: #123048;
+  --shadow: 0 12px 34px rgba(2, 6, 23, 0.6);
+  --glass: rgba(9,17,34,0.6);
+  --radius: 14px;
+}

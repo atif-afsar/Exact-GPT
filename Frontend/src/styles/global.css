@@ -1,0 +1,82 @@
+@import './variables.css';
+
+* { box-sizing: border-box; }
+html,body,#root { height: 100%; }
+body {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: linear-gradient(180deg, var(--bg), var(--surface));
+  color: var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.25rem 1rem;
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--input-border);
+}
+
+[data-theme="dark"] .card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.brand {
+  display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;
+}
+.brand h1{font-size:1.25rem;margin:0}
+.lead{color:var(--muted);font-size:.95rem;margin-bottom:1.25rem}
+
+form { display:block; }
+.form-row { display:flex;flex-direction:column;gap:.35rem;margin-bottom:1rem }
+.form-row.inline { flex-direction:row }
+.form-row.inline .field { flex:1 }
+.label { font-size:.85rem; color:var(--muted) }
+.input {
+  width:100%; padding:.75rem .9rem; border-radius:10px; border:1px solid var(--input-border);
+  background: var(--input-bg); color:var(--text); outline:none; font-size:1rem;
+}
+.input:focus { box-shadow: 0 6px 20px rgba(79,70,229,0.12); border-color: var(--accent-600) }
+.helper { font-size:.85rem; color:var(--muted); margin-top:.25rem }
+
+.input.error { border-color: #ef4444; box-shadow: 0 6px 18px rgba(239,68,68,0.08) }
+.error-text { color: #ef4444; font-size:0.85rem; margin-top:0.35rem }
+
+.btn { display:inline-block; padding:.72rem 1rem; border-radius:10px; background:var(--accent); color:white; border:none; cursor:pointer; font-weight:600; font-size:0.98rem }
+.btn.ghost { background:transparent; color:var(--accent); border:1px solid rgba(79,70,229,0.12) }
+
+/* Actions container — buttons stack on mobile, inline on larger screens */
+.actions { display:flex; gap:0.6rem; align-items:center; width:100% }
+.actions .btn { flex:1 }
+.actions .btn + .btn { margin-left:0 }
+
+/* On very small screens make primary button slightly taller for tap targets */
+@media (max-width:420px) {
+  .btn { padding:.9rem 1rem; font-size:1rem }
+}
+
+.row { display:flex; gap:.75rem }
+
+/* Mobile-first responsiveness */
+@media (min-width:640px) {
+  .card{ padding:2.5rem }
+  .brand h1{ font-size:1.5rem }
+  .actions { flex-direction:row }
+}
+
+@media (min-width:980px) {
+  .card{ max-width:520px }
+}

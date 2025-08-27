@@ -29,7 +29,21 @@
 }
 
 .brand { display:flex; gap:8px; align-items:center }
-.brand-dot { width:34px; height:34px; border-radius:10px; background: linear-gradient(135deg,#2b2b2b,#121212); display:inline-block; box-shadow: var(--shadow); }
+.brand-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  overflow: hidden;   /* ensures img stays inside */
+  display: inline-block;
+}
+
+.brand-dot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;  /* makes it behave like a logo */
+  display: block;
+}
+
 .brand strong { font-size:0.95rem; color: var(--text) }
 .btn.small.new-chat { background: rgba(255,255,255,0.06); border-radius: 8px }
 
@@ -45,7 +59,7 @@
   color: var(--text);
 }
 
-.chat-item.active { background: rgba(255,255,255,0.03); border-left: 3px solid rgba(255,255,255,0.06) }
+.chat-item.active { background: #ffffff08; border-left: 3px solid rgba(255,255,255,0.06) }
 .chat-title { font-weight:600; font-size:.95rem; color: var(--text) }
 .chat-preview { font-size:.78rem; color:var(--muted); margin-top:4px }
 
@@ -67,6 +81,10 @@
   padding: 0.9rem 1rem;
   border-bottom: 1px solid rgba(255,255,255,0.04);
   display:flex;align-items:center;gap:.75rem;justify-content:space-between;
+  /* keep header above the mobile sidebar/backdrop */
+  position: sticky;
+  top: 0;
+  /* z-index: 70; */
 }
 .chat-header-main { display:flex; align-items:center; gap:12px }
 .chat-header-title { font-weight:700; color: var(--text); font-size:1.05rem }
@@ -83,16 +101,120 @@
 }
 
 /* Welcome card when there are no messages */
-.messages.welcome { align-items: center; justify-content: center }
-.welcome-card { background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 14px; text-align:center; max-width:720px; color:var(--text); border:1px solid rgba(255,255,255,0.03) }
-.welcome-card h2 { margin:0 0 .5rem 0; font-size:1.25rem }
-.welcome-card .muted { color: var(--muted); margin-bottom: .75rem }
-.welcome-examples { display:flex; gap:.6rem; justify-content:center; margin-top:.75rem }
-.chip { padding:.45rem .7rem; border-radius:999px; background: rgba(255,255,255,0.03); color:var(--text); font-size:0.9rem }
+/* Messages container */
+.messages {
+  background: #ffffff08;
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+}
 
-.bubble-text { white-space: pre-wrap; word-break: break-word }
-.bubble-footer { display:flex; justify-content:space-between; gap:8px; margin-top:6px; align-items:center; font-size:.78rem; color:var(--muted) }
-.bubble-footer .ts { color: var(--muted); font-size:0.78rem }
+/* Welcome Screen */
+.messages.welcome {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100%;
+}
+
+.welcome-card {
+  background: transparent;
+  padding: 20px;
+  max-width: 520px;
+}
+
+.welcome-card h2 {
+  font-size: 2rem;
+  font-weight: 600;
+  background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text; /* Safari fix */
+  margin-bottom: 12px;
+}
+.welcome-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.chip {
+  background: #111;
+  border: 1px solid #333;
+  padding: 10px 14px;
+  border-radius: 25px;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.chip:hover {
+  border-color: #FFD700;
+  color: #FFD700;
+}
+
+/* Chat Messages */
+.message-row {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.message-user {
+  justify-content: flex-end;
+}
+
+.message-ai {
+  justify-content: flex-start;
+}
+
+.bubble {
+  padding: 12px 16px;
+  border-radius: 12px;
+  max-width: 70%;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.message-user .bubble {
+  background: #FFD700;
+  color: #000;
+  border-bottom-right-radius: 4px;
+}
+
+.message-ai .bubble {
+  background: #1a1a1a;
+  color: #eee;
+  border-bottom-left-radius: 4px;
+}
+
+/* Bubble footer */
+.bubble-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  margin-top: 6px;
+  color: #666;
+}
+
+.bubble-footer .actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 6px;
+  color: #999;
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.bubble-footer .actions button:hover {
+  color: #FFD700;
+}
+
 .actions .icon { background: transparent; border: 1px solid transparent; padding:4px; border-radius:6px; color:var(--muted); }
 .actions .icon:hover { background: rgba(255,255,255,0.03); color:var(--text) }
 
@@ -170,26 +292,49 @@
 .btn.send.disabled, .btn.send:disabled { opacity: 0.45; cursor: not-allowed; transform: none }
 
 /* Mobile: off-canvas sidebar + backdrop */
+/* Sidebar default background */
 .sidebar {
   position: fixed;
   inset: 0 auto 0 0;
   left: 0;
   top: 0;
   bottom: 0;
-  width: 72vw;
-  max-width: 300px;
+  width: 50vw;
+  max-width: 200px;
   transform: translateX(-110%);
   transition: transform 220ms ease;
   z-index: 60;
-}
-.sidebar.open { transform: translateX(0); box-shadow: 0 8px 30px rgba(2,6,23,0.6); }
 
+  /* 🎨 Background fix for mobile */
+  background: #ffffff08; 
+  /* dark, minimal gradient */
+  backdrop-filter: blur(12px); /* soft glassy look */
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* When sidebar opens */
+.sidebar.open { 
+  transform: translateX(0); 
+  box-shadow: 4px 0 30px rgba(0, 0, 0, 0.6); 
+}
+
+/* Backdrop overlay */
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.55);
   z-index: 50;
 }
+
+
+
+/* When sidebar is open, the header (which sits above backdrop) can block taps
+  on the sidebar controls. Let the header pass pointer events through so
+  buttons inside the sidebar remain clickable, but keep the mobile-toggle
+  itself interactive so the user can still close the sidebar. */
+.sidebar.open ~ .chat-panel .chat-header { pointer-events: none; }
+.sidebar.open ~ .chat-panel .chat-header .mobile-toggle { pointer-events: auto; z-index: 75; position: relative; }
 
 /* Mobile toggle button */
 .mobile-toggle {
@@ -200,10 +345,11 @@
   border-radius: 5px;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.03);
+  z-index: 75; /* ensure toggle is clickable and visible above sidebar/backdrop */
 }
 
 /* Make composer sticky so keyboard won't hide it on mobile */
-.composer { position: sticky; bottom: 0; background: transparent; }
+.composer { position: sticky; bottom: 0; background: #ffffff08; }
 
 /* Mobile typography and spacing fixes */
 html, body { -webkit-text-size-adjust: 100%; }

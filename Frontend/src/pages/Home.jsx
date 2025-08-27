@@ -1,37 +1,27 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useMemo } from 'react'
 import '../styles/theme.css'
 import Sidebar from '../components/Sidebar'
 import ChatHeader from '../components/ChatHeader'
 import Messages from '../components/Messages'
 import Composer from '../components/Composer'
+import { useSelector, useDispatch } from 'react-redux'
+import { newChat as newChatAction, selectChat as selectChatAction, addMessage as addMessageAction } from '../store/chatsSlice'
 
 const makeId = () => Math.random().toString(36).slice(2, 9)
 
-const defaultChats = [
-  {
-    id: makeId(),
-    title: 'Welcome Chat',
-    messages: [
-      { id: makeId(), sender: 'ai', text: 'Hi — send a message to start the conversation.', ts: Date.now() },
-    ],
-  },
-]
-
 const Home = () => {
-  // Requirements: state variables for previous chats, current chat messages, and user input
-  const [chats, setChats] = useState(defaultChats)
-  const [activeChatId, setActiveChatId] = useState(chats[0].id)
-  const [messages, setMessages] = useState(chats[0].messages)
+  // Requirements: use redux for chats, current chat id, and messages; keep UI state locally
+  const dispatch = useDispatch()
+  const chats = useSelector((s) => s.chats.chats)
+  const activeChatId = useSelector((s) => s.chats.currentChatId)
+  const activeChat = useMemo(() => chats.find((c) => c.id === activeChatId) || null, [chats, activeChatId])
+  const messages = useMemo(() => (activeChat ? activeChat.messages : []), [activeChat])
   const [input, setInput] = useState('')
 
   const messagesEndRef = useRef(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  useEffect(() => {
-    // sync active chat messages whenever activeChatId or chats change
-    const active = chats.find((c) => c.id === activeChatId)
-    setMessages(active ? active.messages : [])
-  }, [activeChatId, chats])
+  // messages are derived from redux store; no sync effect needed here
 
   useEffect(() => {
     // scroll to bottom when messages change
@@ -39,52 +29,56 @@ const Home = () => {
   }, [messages])
 
   const selectChat = (id) => {
-    setActiveChatId(id)
+    dispatch(selectChatAction(id))
     // close mobile sidebar after selecting a chat
     setSidebarOpen(false)
   }
 
   const newChat = () => {
-    const chat = { id: makeId(), title: 'New Chat', messages: [] }
-    setChats((s) => [chat, ...s])
-    setActiveChatId(chat.id)
+    dispatch(newChatAction())
     setSidebarOpen(false)
   }
 
   const sendMessage = () => {
-    const text = input.trim()
-    if (!text) return
+  const text = input.trim();
+  if (!text) return;
 
-    const userMsg = { id: makeId(), sender: 'user', text, ts: Date.now() }
+  // Create user message
+  const userMsg = {
+    id: makeId(),
+    sender: "user",
+    text,
+    ts: Date.now(),
+  };
 
-    // update messages locally
-    setMessages((m) => [...m, userMsg])
+  // Dispatch to store
+  dispatch(addMessageAction({ chatId: activeChatId, message: userMsg }));
 
-    // update chats store
-    setChats((prev) =>
-      prev.map((c) => {
-        if (c.id !== activeChatId) return c
-        return { ...c, messages: [...c.messages, userMsg], title: c.title === 'New Chat' ? text.slice(0, 40) || 'New Chat' : c.title }
-      }),
-    )
+  // Clear input
+  setInput("");
 
-    setInput('')
+  // Simulated AI response (replace with API later)
+  simulateAiResponse(text);
+};
 
-    // Simulated AI response (replace with real API call later)
-    setTimeout(() => {
-      const aiText = `This is a simulated AI response to: "${text}"`
-      const aiMsg = { id: makeId(), sender: 'ai', text: aiText, ts: Date.now() }
-      setMessages((m) => [...m, aiMsg])
-      setChats((prev) => prev.map((c) => (c.id === activeChatId ? { ...c, messages: [...c.messages, aiMsg] } : c)))
-    }, 700)
+const simulateAiResponse = (prompt) => {
+  setTimeout(() => {
+    const aiMsg = {
+      id: makeId(),
+      sender: "ai",
+      text: `🤖 Here's a simulated AI reply to: "${prompt}"`,
+      ts: Date.now(),
+    };
+    dispatch(addMessageAction({ chatId: activeChatId, message: aiMsg }));
+  }, 700);
+};
+
+const handleKeyDown = (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
   }
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      sendMessage()
-    }
-  }
+};
 
   return (
     <div className="chat-app">

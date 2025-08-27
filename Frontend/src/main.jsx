@@ -1,7 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { Provider } from 'react-redux'
 import App from './App.jsx'
 import './styles/global.css'
+import { store } from './store/store'
 
 // Follow system theme preference and update on changes.
 const applySystemTheme = () => {
@@ -24,6 +26,8 @@ if (typeof window !== 'undefined' && window.matchMedia) {
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <Provider store={store}>
+      <App />
+    </Provider>
   </StrictMode>,
 )

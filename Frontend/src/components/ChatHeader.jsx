@@ -8,7 +8,6 @@ const ChatHeader = ({ title, onToggleSidebar }) => {
       </button>
 
       <div className="chat-header-main">
-        <div className="avatar" aria-hidden>hi</div>
         <div className="chat-header-title">{title}</div>
       </div>
 

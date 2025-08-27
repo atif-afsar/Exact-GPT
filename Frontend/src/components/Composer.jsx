@@ -13,7 +13,7 @@ const Composer = ({ input, setInput, onSend, onKeyDown }) => {
       <div className="composer-inner">
         <textarea
           className="input"
-          placeholder="Type a message and press Enter"
+          placeholder="Type a message "
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}

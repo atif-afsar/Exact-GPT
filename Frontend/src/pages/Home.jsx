@@ -6,7 +6,7 @@ import Messages from '../components/Messages'
 import Composer from '../components/Composer'
 import { useSelector, useDispatch } from 'react-redux'
 import { newChat as newChatAction, selectChat as selectChatAction, addMessage as addMessageAction } from '../store/chatsSlice'
-
+import axios from 'axios'
 const makeId = () => Math.random().toString(36).slice(2, 9)
 
 const Home = () => {
@@ -17,7 +17,7 @@ const Home = () => {
   const activeChat = useMemo(() => chats.find((c) => c.id === activeChatId) || null, [chats, activeChatId])
   const messages = useMemo(() => (activeChat ? activeChat.messages : []), [activeChat])
   const [input, setInput] = useState('')
-
+  // const [message, setMessage] = useState([])
   const messagesEndRef = useRef(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -34,10 +34,22 @@ const Home = () => {
     setSidebarOpen(false)
   }
 
-  const newChat = () => {
-    dispatch(newChatAction())
-    setSidebarOpen(false)
+  const newChat = async () => {
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/api/chat",
+      { title: "New Chat" },
+      { withCredentials: true }
+    );
+
+    const { title } = response.data; // assume backend returns { id, title, messages: [] }
+    dispatch(newChatAction(title)); // pass backend chat object
+    setSidebarOpen(false);
+  } catch (err) {
+    console.error("Failed to create chat:", err);
   }
+};
+
 
   const sendMessage = () => {
   const text = input.trim();

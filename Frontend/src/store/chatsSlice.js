@@ -2,19 +2,11 @@ import { createSlice, nanoid } from '@reduxjs/toolkit'
 
 const makeId = () => nanoid(7)
 
-const defaultChats = [
-  {
-    id: makeId(),
-    title: 'Welcome Chat',
-    messages: [
-      { id: makeId(), sender: 'ai', text: "Hi — send a message to start the conversation.", ts: Date.now() },
-    ],
-  },
-]
+const defaultChats = []
 
 const initialState = {
   chats: defaultChats,
-  currentChatId: defaultChats[0].id,
+  currentChatId: null,
 }
 
 const chatsSlice = createSlice({
